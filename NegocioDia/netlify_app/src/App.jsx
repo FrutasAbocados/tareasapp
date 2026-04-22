@@ -248,6 +248,14 @@ export default function App() {
   const [showUserSwitch, setShowUserSwitch] = useState(false);
   const [filterUser, setFilterUser] = useState('all'); // all | me | alvaro | both
 
+  // Filtro por usuario (DEBE ir antes de cualquier return para cumplir reglas de hooks)
+  const visibleTasks = useMemo(() => {
+    if (filterUser === 'all') return S.tasks;
+    if (filterUser === 'me') return S.tasks.filter(t => t.assignee === 'me' || t.assignee === 'both');
+    if (filterUser === 'alvaro') return S.tasks.filter(t => t.assignee === 'alvaro' || t.assignee === 'both');
+    return S.tasks.filter(t => t.assignee === filterUser);
+  }, [S.tasks, filterUser]);
+
   if (!S.authChecked) {
     return (
       <div style={{ background: '#000', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
@@ -304,14 +312,6 @@ export default function App() {
     setEditingMeeting(null);
   };
   const deleteMeeting = (id) => S.setMeetings(S.meetings.filter(m => m.id !== id));
-
-  // Filtro por usuario
-  const visibleTasks = useMemo(() => {
-    if (filterUser === 'all') return S.tasks;
-    if (filterUser === 'me') return S.tasks.filter(t => t.assignee === 'me' || t.assignee === 'both');
-    if (filterUser === 'alvaro') return S.tasks.filter(t => t.assignee === 'alvaro' || t.assignee === 'both');
-    return S.tasks.filter(t => t.assignee === filterUser);
-  }, [S.tasks, filterUser]);
 
   return (
     <div className="min-h-screen w-full" style={{
